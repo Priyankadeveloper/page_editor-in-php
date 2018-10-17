@@ -1,0 +1,86 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Add tinymce editor in PHP or HTML </title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="tinymce/tinymce.min.js"></script>
+<style>
+.texteditor-container {	
+	width:700px;
+	height:365px;
+}
+textarea#editor1 {
+	width:500px !important;
+	border:1px solid red;
+	
+}
+</style>
+<script>
+	tinymce.init({
+	  selector: 'textarea#editor',  //Change this value according to your HTML
+	  auto_focus: 'element1',
+	  width: "700",
+	  height: "200"
+	});
+	
+
+	
+</script>
+
+</head>
+<body>
+	<form method="POST">
+	
+	<div id="display-post" style="width:700px;" ></div>
+	
+	
+<?php	
+	function get_time_ago( $time )
+{
+    $time_difference = time() - $time;
+
+    if( $time_difference < 1 ) { return 'less than 1 second ago'; }
+    $condition = array( 12 * 30 * 24 * 60 * 60 =>  'year',
+                30 * 24 * 60 * 60       =>  'month',
+                24 * 60 * 60            =>  'day',
+                60 * 60                 =>  'hour',
+                60                      =>  'minute',
+                1                       =>  'second'
+    );
+
+    foreach( $condition as $secs => $str )
+    {
+        $d = $time_difference / $secs;
+
+        if( $d >= 1 )
+        {
+            $t = round( $d );
+            return 'posted ' . $t . ' ' . $str . ( $t > 1 ? 's' : '' ) . ' ago';
+        }
+    }
+}
+	date('h:i:s');
+	$r= get_time_ago( time()-date('h:i:s') );
+?>
+	
+	<div class="texteditor-container">
+	    <h1> Add Title & Description</h1>
+		<input type="text" name="title"><br/><br/>
+		<textarea name="editor" id="editor"></textarea>
+		<input type="submit"  value="Publish" name="submit"/>
+			<input type="text" name="r" value="<?php echo $r;?>">
+
+	</div>
+	</form>
+	<?php
+	$a=mysqli_connect("localhost","root","","priyanka");
+	if(isset($_POST['submit']))
+	{
+	$title=$_POST['title'];
+	$des=$_POST['editor'];
+	$r=$_POST['r'];
+	 mysqli_query($a,"insert into entry(title,description,entry_time)values('$title','$des','$r')");
+	}
+	?>
+</body>
+</html>
